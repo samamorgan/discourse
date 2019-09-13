@@ -1,7 +1,6 @@
+import json
+
 class JsonObject(object):
 
-    def __init__(self, json):
-        self.update(json)
-
-    def update(self, json):
-        self.__dict__.update(json)
+    def __init__(self, d):
+        self.__dict__.update(d)

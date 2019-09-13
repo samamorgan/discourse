@@ -1,4 +1,14 @@
+from .category import Category
 from .client import Client
+from .invite import Invite
+from .json import JsonObject
+from .notification import Notification
+from .plugin import Plugin
+from .post import Post
+from .private_message import PrivateMessage
+from .tag import Tag
+from .topic import Topic
+from .user import User
 
 __all__ = [
     'Category',
