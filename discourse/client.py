@@ -5,6 +5,7 @@ from .user import User
 
 
 class Client(object):
+
     def __init__(self, host, api_username, api_key):
         self.host = host
         self.api_username = api_username

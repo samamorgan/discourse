@@ -1,49 +1,10 @@
-class Post(object):
-    def __init__(self, id):
-        self.id = id
-        self.name = ''
-        self.username = ''
-        self.avatar_template = ''
-        self.created_at = ''
-        self.cooked = ''
-        self.post_number = 0
-        self.post_type = 0
-        self.updated_at = ''
-        self.reply_count = 0
-        self.reply_to_post_number = {}
-        self.quote_count = 0
-        self.avg_time = {}
-        self.incoming_link_count = 0
-        self.reads = 0
-        self.score = 0
-        self.yours = True
-        self.topic_id = 0
-        self.topic_slug = ''
-        self.display_username = ''
-        self.primary_group_name = {}
-        self.primary_group_flair_url = {}
-        self.primary_group_flair_bg_color = {}
-        self.primary_group_flair_color = {}
-        self.version = 0
-        self.can_edit = True
-        self.can_delete = True
-        self.can_recover = True
-        self.can_wiki = True
-        self.user_title = {}
-        self.raw = ''
-        self.actions_summary = [{}]
-        self.moderator = True
-        self.admin = True
-        self.staff = True
-        self.user_id = 0
-        self.hidden = True
-        self.hidden_reason_id = {}
-        self.trust_level = 0
-        self.deleted_at = {}
-        self.user_deleted = True
-        self.edit_reason = {}
-        self.can_view_edit_history = True
-        self.wiki = True
+from .json import JsonObject
+
+
+class Post(JsonObject):
+
+    def __init__(self, json):
+        JsonObject.__init__(self, json)
 
     def lock(self):
         return
