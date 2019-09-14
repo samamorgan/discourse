@@ -1,4 +1,4 @@
-from .json import JsonObject
+from .jsonobject import JsonObject
 
 
 class User(JsonObject):
