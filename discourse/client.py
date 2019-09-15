@@ -1,52 +1,79 @@
+import requests
+
 from .category import Category
+from .invite import Invite
+from .notification import Notification
+from .plugin import Plugin
 from .post import Post
+from .private_message import PrivateMessage
+from .tag import Tag
 from .topic import Topic
 from .user import User
 
-
 class Client(object):
+
+    Category = Category
+    Invite = Invite
+    Notification = Notification
+    Plugin = Plugin
+    Post = Post
+    PrivateMessage = PrivateMessage
+    Tag = Tag
+    Topic = Topic
+    User = User
 
     def __init__(self, host, api_username, api_key):
         self.host = host
-        self.api_username = api_username
-        self.api_key = api_key
 
-    # CATEGORIES
+        self.session = requests.Session()
+        self.session.headers.update({
+            'api_username': api_username,
+            'api_key': api_key
+        })
+
+    # Class Methods
+    def _request(self, method, path, params=None, data=None):
+        response = self.session.request(
+            method=method.upper(),
+            url='{}/{}'.format(self.host, path),
+            params=params,
+        )
+
+        return response
+
+    # General
+    def search(self, term, include_blurbs=True):
+        response = self._request('GET', 'search/query.json', params={
+            'term': term,
+            'include_blurbs': include_blurbs,
+        })
+
+        return response
+
+    # Categories
     def get_category_list(self):
-        return [Category(), Category()]
+        response = self._request('GET', 'categories.json')
+
+        categories = []
+        for category in response['category_list']['categories']:
+            categories.append(self.Category(self, category))
+
+        return categories
 
     def create_category(self, name, color, text_color):
         return Category()
 
-    def get_category_topics(self, id, page):
-        return [Topic(), Topic()]
-
-    def update_category(self, name, color, text_color):
-        return Category()
-
-    # POSTS
+    # Posts
     def get_latest_posts(self, before):
         return [Post(), Post()]
 
     def create_post(self):
         return Post()
 
-    def create_private_message(self):
-        pass
-
     def get_post(self, id):
         return Post(id)
 
-    def update_post(self, id, raw, raw_old, edit_reason, cooked):
-        return Post()
-
-    def lock_post(self, id):
-        return True or False
-
-    def post_action(self, action):
-        return Post(), True or False
-
-    # TOPICS
+    # Topics
     def create_topic(self, title, raw, category=None, created_at=None):
         return Topic()
 
@@ -59,59 +86,89 @@ class Client(object):
     def get_top_topics(self, flag=''):
         return [Topic(), Topic()]
 
-    def create_timed_topic(self, time, status_type, based_on_last_post, category_id):
+    def create_timed_topic(
+        self,
+        time,
+        status_type,
+        based_on_last_post,
+        category_id
+    ):
         return
 
-    # INVITES
+    # Invites
 
-    # PRIVATE MESSAGES
+    # Private Messages
+    def create_private_message(
+        self,
+        title,
+        raw,
+        target_usernames,
+        created_at=None
+    ):
+        archetype = 'private_message'
+        pass
 
-    # NOTIFICATIONS
+    # Notifications
 
-    # TAGS
+    # Tags
 
-    # USERS
+    # Users
     def get_user(self, id, usename=None, external_id=None):
         return User() or None
 
-    def create_user(self, name, email, password, username, active, approved, user_fields):
+    def create_user(
+        self,
+        name,
+        email,
+        password,
+        username,
+        active,
+        approved,
+        user_fields
+    ):
         return User() or None
 
     def get_public_users(self, period, order, ascending=True, page=0):
         return [User(), User()]
 
-    # UPLOAD
+    # Upload
 
-    # SEARCH
+    # Search
 
-    # ADMIN EMAILS
+    # Admin Emails
 
-    # ADMIN
+    # Admin
 
-    # GROUPS
+    # Groups
 
-    # PASSWORD RESET
+    # Password Reset
 
-    # SITE SETTINGS
+    # Site
+    def get_site(self):
+        response = self._request('GET', 'categories.json')
 
-    # PLUGINS
+        return self.Category(self, response)
 
-    # BACKUPS
+    # Site Settings
 
-    # EMAILS
+    # Plugins
 
-    # FLAGS
+    # Backups
 
-    # BADGES
+    # Emails
 
-    # USER FIELDS
+    # Flags
 
-    # WEB HOOKS
+    # Badges
 
-    # LOGS
+    # User Fields
 
-    # ABOUT
+    # Web Hooks
 
-    # POLL PLUGIN
+    # Logs
 
-    # REPORTS
+    # About
+
+    # Poll Plugin
+
+    # Reports

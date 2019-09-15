@@ -1,7 +1,7 @@
 from .jsonobject import JsonObject
 
 
-class Invite(JsonObject):
+class Site(JsonObject):
 
     def __init__(self, client, json):
         self.client = client

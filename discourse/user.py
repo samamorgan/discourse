@@ -3,7 +3,9 @@ from .jsonobject import JsonObject
 
 class User(JsonObject):
 
-    def __init__(self, json):
+    def __init__(self, client, json):
+        self.client = client
+
         JsonObject.__init__(self, json)
 
     def update_avatar(self, upload_id, type):

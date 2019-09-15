@@ -1,27 +1,32 @@
 from .jsonobject import JsonObject
+from .post import Post
 
 
 class Topic(JsonObject):
 
-    def __init__(self, json):
-        JsonObject.__init__(self, json)
+    Post = Post
 
-    def get_post(self):
+    def __init__(self, client, json):
+        self.client = client
+
+        super().__init__(json)
+
+    def get_post(self, id):
         return
 
-    def remove(self, id):
+    def remove(self):
         return True or False
 
-    def update(self, id, slug='-'):
+    def update(self, slug='-'):
         return Topic()
 
-    def invite_user(self, id, user):
+    def invite_user(self, username):
         return True or False
 
-    def bookmark(self, id):
+    def bookmark(self):
         return
 
-    def update_status(self, id, status, enabled, until):
+    def update_status(self, status, enabled, until):
         return
 
     def update_timestamp(self, timestamp):
