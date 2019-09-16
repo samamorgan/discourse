@@ -3,7 +3,7 @@ from .jsonobject import JsonObject
 
 class Tag(JsonObject):
 
-    def __init__(self, client, json):
+    def __init__(self, client, **kwargs):
         self.client = client
 
-        JsonObject.__init__(self, json)
+        super().__init__(**kwargs)

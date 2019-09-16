@@ -1,3 +1,5 @@
+from json.decoder import JSONDecodeError
+
 import requests
 
 from .category import Category
@@ -9,6 +11,7 @@ from .private_message import PrivateMessage
 from .tag import Tag
 from .topic import Topic
 from .user import User
+
 
 class Client(object):
 
@@ -27,8 +30,8 @@ class Client(object):
 
         self.session = requests.Session()
         self.session.headers.update({
-            'api_username': api_username,
-            'api_key': api_key
+            'Api-Username': api_username,
+            'Api-Key': api_key
         })
 
     # Class Methods
@@ -37,12 +40,17 @@ class Client(object):
             method=method.upper(),
             url='{}/{}'.format(self.host, path),
             params=params,
+            data=data,
         )
 
-        return response
+        if not response.ok:
+            response.raise_for_status()
+
+        return response.json()
 
     # General
     def search(self, term, include_blurbs=True):
+        # TODO: Parse json and pass back an array of objects
         response = self._request('GET', 'search/query.json', params={
             'term': term,
             'include_blurbs': include_blurbs,
@@ -54,14 +62,19 @@ class Client(object):
     def get_category_list(self):
         response = self._request('GET', 'categories.json')
 
-        categories = []
-        for category in response['category_list']['categories']:
-            categories.append(self.Category(self, category))
-
-        return categories
+        return [
+            Category(client=self, json=category)
+            for category
+            in response['category_list']['categories']
+        ]
 
     def create_category(self, name, color, text_color):
-        return Category()
+        response = self._request('POST', 'categories.json', params={
+            'name': name,
+            'color': color,
+            'text_color': text_color,
+        })
+        return Category(client=self, json=response['category'])
 
     # Posts
     def get_latest_posts(self, before):
@@ -142,12 +155,6 @@ class Client(object):
     # Groups
 
     # Password Reset
-
-    # Site
-    def get_site(self):
-        response = self._request('GET', 'categories.json')
-
-        return self.Category(self, response)
 
     # Site Settings
 

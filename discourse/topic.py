@@ -6,10 +6,10 @@ class Topic(JsonObject):
 
     Post = Post
 
-    def __init__(self, client, json):
+    def __init__(self, client, **kwargs):
         self.client = client
 
-        super().__init__(json)
+        super().__init__(**kwargs)
 
     def get_post(self, id):
         return

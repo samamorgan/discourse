@@ -3,10 +3,10 @@ from .jsonobject import JsonObject
 
 class User(JsonObject):
 
-    def __init__(self, client, json):
+    def __init__(self, client, **kwargs):
         self.client = client
 
-        JsonObject.__init__(self, json)
+        super().__init__(**kwargs)
 
     def update_avatar(self, upload_id, type):
         return True or False
