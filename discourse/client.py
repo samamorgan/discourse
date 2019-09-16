@@ -142,8 +142,32 @@ class Client(object):
     # Tags
 
     # Users
-    def get_user(self, id, usename=None, external_id=None):
-        return User() or None
+    def get_user(self, **kwargs):
+        keyword_map = {
+            'id': 'admin/users/{}.json',
+            'username': 'users/{}.json',
+            'external_id': 'u/by-external/{}.json',
+        }
+        if len(kwargs) != 1:
+            raise TypeError(
+                'get_user() takes 1 keyword argument but {} were given'.format(
+                    len(kwargs)
+                )
+            )
+
+        kw = list(kwargs)[0]
+        if kw not in keyword_map:
+            raise TypeError(
+                '"{}" is not a valid keyword argument.'.format(kw)
+            )
+
+        response = self._request(
+            'GET',
+            keyword_map[kw].format(kwargs[kw])
+        )
+        if kw == 'id':
+            return User(client=self, json=response)
+        return User(client=self, json=response['user'])
 
     def create_user(
         self,
@@ -151,14 +175,56 @@ class Client(object):
         email,
         password,
         username,
-        active,
-        approved,
-        user_fields
+        active=True,
+        approved=True,
+        user_fields=''
     ):
-        return User() or None
+        response = self._request('POST', 'users', params={
+            'name': name,
+            'email': email,
+            'password': password,
+            'username': username,
+            'active': active,
+            'approved': approved,
+            'user_fields': user_fields,
+        })
+        return self.get_user(id=response['user_id'])
 
     def get_public_users(self, period, order, ascending=True, page=0):
-        raise NotImplementedError
+        response = self._request('GET', 'directory_items.json', params={
+            'period': period,
+            'order': order,
+            'ascending': ascending,
+            'page': page,
+        })
+
+        # TODO: Return more than just the users here
+        return [
+            User(client=self, json=user)
+            for user
+            in response['directory_items']['user']
+        ]
+
+    def get_users(
+        self,
+        flag,
+        order,
+        ascending=True,
+        page=None,
+        show_emails=None,
+    ):
+        response = self._request(
+            'GET',
+            'admin/users/list/{}.json'.format(self.flag),
+            params={
+                'order': order,
+                'ascending': ascending,
+                'page': page,
+                'show_emails': show_emails,
+            }
+        )
+
+        return [User(client=self, json=user) for user in response]
 
     # Upload
 
