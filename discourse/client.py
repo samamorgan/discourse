@@ -78,13 +78,27 @@ class Client(object):
 
     # Posts
     def get_latest_posts(self, before):
-        return [Post(), Post()]
+        # TODO: Figure out good default for before
+        response = self._request('GET', 'posts.json', params={
+            'before': before
+        })
 
-    def create_post(self):
-        return Post()
+        return [
+            Post(client=self, json=post)
+            for post
+            in response['latest_posts']
+        ]
+
+    def create_post(self, topic_id, raw):
+        response = self._request('POST', 'posts.json', params={
+            'topic_id': topic_id,
+            'raw': raw,
+        })
+        return Post(client=self, json=response)
 
     def get_post(self, id):
-        return Post(id)
+        response = self._request('GET', 'posts/{}.json'.format(id))
+        return Post(client=self, json=response)
 
     # Topics
     def create_topic(self, title, raw, category=None, created_at=None):

@@ -8,11 +8,27 @@ class Post(JsonObject):
 
         super().__init__(**kwargs)
 
-    def lock(self):
-        return
+    def update(self, raw=None, raw_old=None, edit_reason=None, cooked=None):
+        response = self.client._request(
+            'PUT',
+            'posts/{}.json'.format(self.id),
+            params={
+                'post[raw]': raw,
+                'post[raw_old]': raw_old,
+                'post[edit_reason]': edit_reason,
+                'post[cooked]': cooked,
+            }
+        )
 
-    def update(self, id, raw, raw_old, edit_reason, cooked):
-        return Post()
+        return Post(client=self.client, json=response['post'])
+
+    def lock(self, locked):
+        response = self.client._request(
+            'PUT',
+            'posts/{}/locked'.format(self.id),
+            params={'locked': locked}
+        )
+        return response
 
     def action(self, action):
         return Post(), True or False
