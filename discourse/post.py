@@ -31,4 +31,6 @@ class Post(JsonObject):
         return response
 
     def action(self, action):
-        return Post(), True or False
+        # Must understand what the actio fields represent before implementing
+        # return Post(), True or False
+        raise NotImplementedError

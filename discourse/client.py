@@ -1,5 +1,3 @@
-from json.decoder import JSONDecodeError
-
 import requests
 
 from .category import Category
@@ -102,16 +100,20 @@ class Client(object):
 
     # Topics
     def create_topic(self, title, raw, category=None, created_at=None):
-        return Topic()
+        # return Topic()
+        raise NotImplementedError
 
     def get_topic(self, id):
-        return Topic()
+        # return Topic()
+        raise NotImplementedError
 
     def get_latest_topics(self, order, ascending=True):
-        return [Topic(), Topic()]
+        # return [Topic(), Topic()]
+        raise NotImplementedError
 
     def get_top_topics(self, flag=''):
-        return [Topic(), Topic()]
+        # return [Topic(), Topic()]
+        raise NotImplementedError
 
     def create_timed_topic(
         self,
@@ -120,7 +122,7 @@ class Client(object):
         based_on_last_post,
         category_id
     ):
-        return
+        raise NotImplementedError
 
     # Invites
 
@@ -156,7 +158,7 @@ class Client(object):
         return User() or None
 
     def get_public_users(self, period, order, ascending=True, page=0):
-        return [User(), User()]
+        raise NotImplementedError
 
     # Upload
 
