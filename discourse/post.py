@@ -28,9 +28,10 @@ class Post(JsonObject):
             'posts/{}/locked'.format(self.id),
             params={'locked': locked}
         )
+
         return response
 
     def action(self, action):
-        # Must understand what the actio fields represent before implementing
+        # Must understand what the action fields represent before implementing
         # return Post(), True or False
         raise NotImplementedError

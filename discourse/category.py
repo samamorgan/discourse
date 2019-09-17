@@ -18,6 +18,7 @@ class Category(JsonObject):
             'c/{}.json'.format(self.id),
             params={'page': page}
         )
+
         return [
             Topic(client=self.client, json=topic)
             for topic

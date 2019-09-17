@@ -72,6 +72,7 @@ class Client(object):
             'color': color,
             'text_color': text_color,
         })
+
         return Category(client=self, json=response['category'])
 
     # Posts
@@ -92,6 +93,7 @@ class Client(object):
             'topic_id': topic_id,
             'raw': raw,
         })
+
         return Post(client=self, json=response)
 
     def get_post(self, id):
@@ -100,31 +102,72 @@ class Client(object):
 
     # Topics
     def create_topic(self, title, raw, category=None, created_at=None):
-        # return Topic()
-        raise NotImplementedError
+        response = self._request('POST', 'topics.json', params={
+            'title': title,
+            'raw': raw,
+            'category': category,
+            'created_at': created_at,
+        })
+
+        return Topic(client=self, json=response)
 
     def get_topic(self, id):
-        # return Topic()
-        raise NotImplementedError
+        response = self._request('GET', 't/{}.json'.format(id))
+
+        return Topic(client=self, json=response)
 
     def get_latest_topics(self, order, ascending=True):
-        # return [Topic(), Topic()]
-        raise NotImplementedError
+        response = self._request('GET', 'latest.json', params={
+            'order': order,
+            'ascending': ascending,
+        })
+        return [
+            Topic(client=self, json=topic)
+            for topic
+            in response['topic_list']['topics']
+        ]
 
     def get_top_topics(self, flag=''):
-        # return [Topic(), Topic()]
-        raise NotImplementedError
-
-    def create_timed_topic(
-        self,
-        time,
-        status_type,
-        based_on_last_post,
-        category_id
-    ):
-        raise NotImplementedError
+        if flag:
+            flag = '/{}'.format(flag)
+        response = self._request('GET', 'top{}.json'.format(flag))
+        return [
+            Topic(client=self, json=topic)
+            for topic
+            in response['topic_list']['topics']
+        ]
 
     # Invites
+    def invite_user(self, email, group_names=None, custom_message=None):
+        response = self._request(
+            'POST',
+            'invites',
+            params={
+                'email': email,
+                'group_names': group_names,
+                'custom_message': custom_message
+            }
+        )
+        if response['success'] == 'OK':
+            return True
+        return False
+
+    def generate_invite_url(
+        self,
+        email,
+        group_names=None,
+        custom_message=None
+    ):
+        response = self._request(
+            'POST',
+            'invites/link',
+            params={
+                'email': email,
+                'group_names': group_names,
+                'custom_message': custom_message
+            }
+        )
+        return response
 
     # Private Messages
     def create_private_message(
@@ -165,6 +208,7 @@ class Client(object):
             'GET',
             keyword_map[kw].format(kwargs[kw])
         )
+
         if kw == 'id':
             return User(client=self, json=response)
         return User(client=self, json=response['user'])
@@ -188,6 +232,7 @@ class Client(object):
             'approved': approved,
             'user_fields': user_fields,
         })
+
         return self.get_user(id=response['user_id'])
 
     def get_public_users(self, period, order, ascending=True, page=0):
