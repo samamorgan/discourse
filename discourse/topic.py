@@ -5,8 +5,6 @@ from .user import User
 
 class Topic(JsonObject):
 
-    Post = Post
-
     def __init__(self, client, **kwargs):
         self.client = client
 
@@ -77,7 +75,7 @@ class Topic(JsonObject):
         based_on_last_post,
         category_id
     ):
-        response = self._request(
+        response = self.client._request(
             'POST',
             't/{}/timer'.format(self.id),
             params={

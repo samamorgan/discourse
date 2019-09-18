@@ -4,8 +4,6 @@ from .topic import Topic
 
 class Category(JsonObject):
 
-    Topic = Topic
-
     def __init__(self, client, **kwargs):
         # TODO: Parse out sub-categories into category objects if possible
         self.client = client
@@ -39,7 +37,7 @@ class Category(JsonObject):
             params={'name': name, 'color': color, 'text_color': text_color}
         )
 
-        # TODO: Figure out actual string values of response['success']
-        if response['success'] == 'Foo':
-            return Category(client=self.client, json=response['category'])
+        if response['success'] == 'OK':
+            self.update_attributes(json=response['category'])
+            return self
         return False

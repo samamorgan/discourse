@@ -1,27 +1,15 @@
 import requests
 
 from .category import Category
-from .invite import Invite
-from .notification import Notification
 from .plugin import Plugin
 from .post import Post
 from .private_message import PrivateMessage
-from .tag import Tag
+from .tag import TagGroup, Tag
 from .topic import Topic
 from .user import User
 
 
 class Client(object):
-
-    Category = Category
-    Invite = Invite
-    Notification = Notification
-    Plugin = Plugin
-    Post = Post
-    PrivateMessage = PrivateMessage
-    Tag = Tag
-    Topic = Topic
-    User = User
 
     def __init__(self, host, api_username, api_key):
         self.host = host
@@ -55,6 +43,10 @@ class Client(object):
         })
 
         return response
+
+    def upload(files):
+        # TODO: Reverse-engineer this request
+        raise NotImplementedError
 
     # Categories
     def get_category_list(self):
@@ -98,6 +90,7 @@ class Client(object):
 
     def get_post(self, id):
         response = self._request('GET', 'posts/{}.json'.format(id))
+
         return Post(client=self, json=response)
 
     # Topics
@@ -121,6 +114,7 @@ class Client(object):
             'order': order,
             'ascending': ascending,
         })
+
         return [
             Topic(client=self, json=topic)
             for topic
@@ -131,6 +125,7 @@ class Client(object):
         if flag:
             flag = '/{}'.format(flag)
         response = self._request('GET', 'top{}.json'.format(flag))
+
         return [
             Topic(client=self, json=topic)
             for topic
@@ -148,8 +143,9 @@ class Client(object):
                 'custom_message': custom_message
             }
         )
+
         if response['success'] == 'OK':
-            return True
+            return User(client=self, json=response['user'])
         return False
 
     def generate_invite_url(
@@ -167,6 +163,7 @@ class Client(object):
                 'custom_message': custom_message
             }
         )
+
         return response
 
     # Private Messages
@@ -177,12 +174,57 @@ class Client(object):
         target_usernames,
         created_at=None
     ):
-        archetype = 'private_message'
-        pass
+        response = self._request('POST', 'topics.json', params={
+            'title': title,
+            'raw': raw,
+            'target_usernames': target_usernames,
+            'archetype': 'private_message',
+            'created_at': created_at,
+        })
 
-    # Notifications
+        return PrivateMessage(client=self, json=response)
 
     # Tags
+    def get_tag_groups(self):
+        response = self._request('GET', 'tag_groups.json')
+
+        return [
+            TagGroup(client=self, json=tag_group)
+            for tag_group
+            in response['tag_groups']
+        ]
+
+    def create_tag_group(self, name, tag_names):
+        response = self._request('POST', 'tag_groups.json', params={
+            'name': name,
+            'tag_names': tag_names,
+        })
+
+        return TagGroup(client=self, json=response['tag_group'])
+
+    def get_tag_group(self, id):
+        response = self._request('GET', 'tag_groups/{}.json'.format(id))
+
+        return TagGroup(client=self, json=response['tag_group'])
+
+    def update_tag_group(self, id, name, tag_names):
+        response = self._request(
+            'PUT',
+            'tag_groups/{}.json'.format(),
+            params={'name': name, 'tag_names': tag_names}
+        )
+
+        return TagGroup(client=self, json=response['tag_group'])
+
+    def get_tags(self):
+        response = self._request('GET', 'tags.json')
+        return [Tag(client=self, json=tag) for tag in response['tags']]
+
+    def get_tag(self, tag):
+        response = self._request('GET', 'tags/{}.json'.format(tag))
+        response['id'] = tag
+
+        return Tag(client=self, json=response)
 
     # Users
     def get_user(self, **kwargs):
@@ -286,7 +328,10 @@ class Client(object):
     # Site Settings
 
     # Plugins
+    def get_plugins(self):
+        response = self._request('GET', 'admin/plugins')
 
+        return [Plugin(client=self, json=plugin) for plugin in response]
     # Backups
 
     # Emails
