@@ -122,3 +122,46 @@ class User(JsonObject):
     def mark_notifications_read(self):
         # Not well documented in API. Need to reverse-engineer
         return NotImplementedError
+
+    # Admin
+    def suspend(self):
+        # Combine suspend and unsuspend
+        raise NotImplementedError
+
+    def silence(self):
+        # Combine silence and unsilence
+        raise NotImplementedError
+
+    def activate(self):
+        raise NotImplementedError
+
+    def anonymize(self):
+        raise NotImplementedError
+
+    def generate_api_key(self):
+        raise NotImplementedError
+
+    def assign_group(self):
+        # Not clear exactly what this does from docs. Experiment.
+        # Makes a user part of a group?
+        raise NotImplementedError
+
+    def remove_group(self):
+        # Again, unclear what this does specificaly. May be able to combine
+        # with assign_to_group
+        raise NotImplementedError
+
+    def send_password_reset_email(self):
+        raise NotImplementedError
+
+    def reset_password(self, password):
+        raise NotImplementedError
+
+    def get_badges(self):
+        raise NotImplementedError
+
+    def assign_badge(self, badge_id, reason):
+        raise NotImplementedError
+
+    def revoke_badge(self, id):
+        raise NotImplementedError

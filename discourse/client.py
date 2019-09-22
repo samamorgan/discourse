@@ -318,36 +318,122 @@ class Client(object):
     # Search
 
     # Admin Emails
+    def show_email_settings(self):
+        raise NotImplementedError
+
+    def show_email_templates(self):
+        raise NotImplementedError
 
     # Admin
 
     # Groups
+    def create_group(self, name):
+        raise NotImplementedError
+
+    def get_groups(self):
+        raise NotImplementedError
+
+    def get_group(self, name):
+        raise NotImplementedError
 
     # Password Reset
 
     # Site Settings
+    def show_site_settings(self):
+        # May be able to make an overall "Site Settings" def
+        raise NotImplementedError
 
     # Plugins
     def get_plugins(self):
         response = self._request('GET', 'admin/plugins')
 
         return [Plugin(client=self, json=plugin) for plugin in response]
+
     # Backups
+    def get_backups(self):
+        raise NotImplementedError
+
+    def create_backup(self, with_uploads):
+        raise NotImplementedError
+
+    def download_backup(self, filename):
+        raise NotImplementedError
+
+    def set_backup_readonly(self, enable=True):
+        raise NotImplementedError
 
     # Emails
+    def get_emails(self, action, offset):
+        raise NotImplementedError
 
     # Flags
+    def get_flags(self, type, offset):
+        raise NotImplementedError
 
     # Badges
+    def get_badges(self):
+        raise NotImplementedError
+
+    def create_badge(
+        self,
+        allow_title,
+        multiple_grant,
+        listable,
+        auto_revoke,
+        enabled,
+        show_posts,
+        target_posts,
+        name,
+        description,
+        long_description,
+        icon,
+        image,
+        badge_grouping_id,
+        badge_type_id,
+    ):
+        raise NotImplementedError
 
     # User Fields
+    def get_user_fields(self):
+        raise NotImplementedError
+
+    def create_user_field(self, name, description, field_type, required):
+        raise NotImplementedError
+
+    def delete_user_field(self, id):
+        raise NotImplementedError
 
     # Web Hooks
+    def create_web_hook(
+        self,
+        payload_url,
+        content_type,
+        secret,
+        wildcard_web_hook,
+        verify_certificate,
+        active,
+        web_hook_event_type_ids,
+        category_ids,
+        group_ids,
+    ):
+        raise NotImplementedError
 
     # Logs
+    def get_staff_action_logs(self):
+        raise NotImplementedError
 
     # About
+    def fetch_about(self):
+        raise NotImplementedError
 
     # Poll Plugin
+    def poll_vote(self, post_id, poll_name, options):
+        # May be best to implement in Post class. Investigate
+        raise NotImplementedError
 
     # Reports
+    def get_pageview_stats(self, start_date, end_date, category_id, group_id):
+        raise NotImplementedError
+
+    def export_report(self, entity, name, start_date, end_date, group_id):
+        raise NotImplementedError
