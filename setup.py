@@ -19,5 +19,5 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Development Status :: 3 - Alpha',
     ],
-    python_requires='requests',
+    install_requires='requests',
 )
