@@ -1,6 +1,7 @@
 import requests
 
 from .category import Category
+from .group import Group
 from .plugin import Plugin
 from .post import Post
 from .private_message import PrivateMessage
@@ -319,29 +320,31 @@ class Client(object):
 
     # Admin Emails
     def show_email_settings(self):
-        raise NotImplementedError
+        return self._request('GET', '/admin/email.json')
 
     def show_email_templates(self):
-        raise NotImplementedError
+        return self._request('GET', '/admin/customize/email_templates.json')
 
     # Admin
 
     # Groups
     def create_group(self, name):
-        raise NotImplementedError
+        response = self._request('GET', '/groups.json')
+        return [Group(client=self, json=group) for group in response]
 
-    def get_groups(self):
-        raise NotImplementedError
+    def get_groups(self, name=None):
+        response = self._request('GET', '/groups.json')
+        return [Group(client=self, json=group) for group in response]
 
     def get_group(self, name):
-        raise NotImplementedError
+        return self.get_groups(name=name)[0]
 
     # Password Reset
 
     # Site Settings
     def show_site_settings(self):
         # May be able to make an overall "Site Settings" def
-        raise NotImplementedError
+        return self._request('GET', '/admin/site_settings.json')
 
     # Plugins
     def get_plugins(self):
@@ -351,28 +354,62 @@ class Client(object):
 
     # Backups
     def get_backups(self):
-        raise NotImplementedError
+        return self._request('GET', '/admin/backups.json')
 
     def create_backup(self, with_uploads):
-        raise NotImplementedError
+        response = self._request('POST', '/admin/backups.json', params={
+            'with_uploads': with_uploads,
+        })
+
+        if response['success'] == 'OK':
+            return True
+        return False
 
     def download_backup(self, filename):
-        raise NotImplementedError
+        # TODO: Undocumented response, reverse-engineer it
+        return self._request('PUT', '/admin/backups/{}'.format(filename))
 
-    def set_backup_readonly(self, enable=True):
-        raise NotImplementedError
+    def set_backup_readonly(self, enable):
+        # TODO: Documented as empty response. Check it out and return
+        #       something useful.
+        return self._request('PUT', '/admin/backups/readonly', params={
+            'enable': enable,
+        })
 
     # Emails
     def get_emails(self, action, offset):
-        raise NotImplementedError
+        # TODO: Offset doesn't appear to be a part of the request syntax.
+        #       Need to test and figure out correct request and returns.
+        actions = ['sent', 'skipped', 'bounced', 'received', 'rejected']
+        if action not in actions:
+            raise ValueError('"action" must be one of: {}'.format(actions))
+
+        response = self._request(
+            'GET',
+            '/admin/emails/{}.json'.format(action),
+            params={'offset': offset},
+        )
+
+        return response
 
     # Flags
     def get_flags(self, type, offset):
-        raise NotImplementedError
+        types = ['active', 'old']
+        if type not in types:
+            raise ValueError('"type" must be one of: {}'.format(types))
+
+        response = self._request(
+            'GET',
+            '/admin/flags/{}.json'.format(type),
+            params={'offset': offset},
+        )
+
+        return response
 
     # Badges
     def get_badges(self):
-        raise NotImplementedError
+        # TODO: Make a Badge class. Return Badge() list
+        return self._request('GET', '/admin/badges.json')
 
     def create_badge(
         self,
