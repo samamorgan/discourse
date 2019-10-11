@@ -12,26 +12,24 @@ from .user import User
 
 class Client(object):
 
-    def __init__(self, host, api_username, api_key):
+    def __init__(self, host, api_username='', api_key=''):
         self.host = host
 
         self.session = requests.Session()
         self.session.headers.update({
             'Api-Username': api_username,
-            'Api-Key': api_key
+            'Api-Key': api_key,
         })
 
     # Class Methods
     def _request(self, method, path, params=None, data=None):
         response = self.session.request(
             method=method.upper(),
-            url='{}/{}'.format(self.host, path),
+            url=requests.compat.urljoin(self.host, path),
             params=params,
             data=data,
         )
-
-        if not response.ok:
-            response.raise_for_status()
+        response.raise_for_status()
 
         return response.json()
 

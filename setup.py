@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='discourse',
-    version='0.1.0',
+    version='0.1.2',
     author='Sam Morgan',
     author_email='sama4mail@gmail.com',
     description='A Python wrapper of the Discourse API',
@@ -19,5 +19,5 @@ setuptools.setup(
         'Operating System :: OS Independent',
         'Development Status :: 3 - Alpha',
     ],
-    python_requires='>=3.6',
+    install_requires='requests',
 )
