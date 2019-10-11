@@ -45,9 +45,12 @@ class Client(object):
 
         return response
 
-    def upload(files):
-        # TODO: Reverse-engineer this request
-        raise NotImplementedError
+    def upload(self, files):
+        response = self._request('POST', 'uploads.json', params={
+            'files': files,
+        })
+
+        return response
 
     # Categories
     def get_category_list(self):
@@ -320,20 +323,20 @@ class Client(object):
 
     # Admin Emails
     def show_email_settings(self):
-        return self._request('GET', '/admin/email.json')
+        return self._request('GET', 'admin/email.json')
 
     def show_email_templates(self):
-        return self._request('GET', '/admin/customize/email_templates.json')
+        return self._request('GET', 'admin/customize/email_templates.json')
 
     # Admin
 
     # Groups
     def create_group(self, name):
-        response = self._request('GET', '/groups.json')
+        response = self._request('GET', 'groups.json')
         return [Group(client=self, json=group) for group in response]
 
     def get_groups(self, name=None):
-        response = self._request('GET', '/groups.json')
+        response = self._request('GET', 'groups.json')
         return [Group(client=self, json=group) for group in response]
 
     def get_group(self, name):
@@ -344,7 +347,7 @@ class Client(object):
     # Site Settings
     def show_site_settings(self):
         # May be able to make an overall "Site Settings" def
-        return self._request('GET', '/admin/site_settings.json')
+        return self._request('GET', 'admin/site_settings.json')
 
     # Plugins
     def get_plugins(self):
@@ -428,11 +431,30 @@ class Client(object):
         badge_grouping_id,
         badge_type_id,
     ):
-        raise NotImplementedError
+        response = self._request('POST', '/admin/badges.json', params={
+            'allow_title': allow_title,
+            'multiple_grant': multiple_grant,
+            'listable': listable,
+            'auto_revoke': auto_revoke,
+            'enabled': enabled,
+            'show_posts': show_posts,
+            'target_posts': target_posts,
+            'name': name,
+            'description': description,
+            'long_description': long_description,
+            'icon': icon,
+            'image': image,
+            'badge_grouping_id': badge_grouping_id,
+            'badge_type_id': badge_type_id,
+        })
+
+        if response['success'] == 'OK':
+            return True
+        return False
 
     # User Fields
     def get_user_fields(self):
-        raise NotImplementedError
+        return self._request('GET', '/admin/customize/user_fields.json')
 
     def create_user_field(self, name, description, field_type, required):
         raise NotImplementedError
