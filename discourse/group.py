@@ -2,7 +2,6 @@ from .jsonobject import JsonObject
 
 
 class Group(JsonObject):
-
     def __init__(self, client, **kwargs):
         self.client = client
 
@@ -16,8 +15,8 @@ class Group(JsonObject):
 
     def add_users(self, usernames):
         if type(usernames) is str:
-            if ',' in usernames:
-                usernames = usernames.split(',')
+            if "," in usernames:
+                usernames = usernames.split(",")
         raise NotImplementedError
 
     def remove_users(self, usernames):
@@ -25,8 +24,8 @@ class Group(JsonObject):
         # - Remove user(s) from a group
         # - Remove group assigned to a user
         if type(usernames) is str:
-            if ',' in usernames:
-                usernames = usernames.split(',')
+            if "," in usernames:
+                usernames = usernames.split(",")
         raise NotImplementedError
 
     def update(self):

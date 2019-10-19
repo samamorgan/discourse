@@ -3,6 +3,7 @@
 
 [![Version](https://img.shields.io/pypi/v/discourse)](https://pypi.org/project/discourse/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 This package allows Python developers to write software that makes use of the Discourse API. Functions available in the API are mirrored in this package as closely as possible, translating JSON responses to Python objects. You can find the current documentation for the Discourse API here:
 
