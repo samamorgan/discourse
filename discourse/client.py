@@ -328,3 +328,8 @@ class Client:
     # Poll Plugin
 
     # Reports
+
+    def get_site_configuration(self):
+        response = self._request("GET", "site.json")
+
+        return response
