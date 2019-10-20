@@ -107,6 +107,13 @@ class Client:
 
         return [Topic(json=topic) for topic in response["topic_list"]["topics"]]
 
+    def get_group_topics(self, group_name):
+        response = self._request(
+            "GET", "topics/groups/{}.json".format(group_name),
+        )
+
+        return [Topic(json=topic) for topic in response["topic_list"]["topics"]]
+
     def get_top_topics(self, flag=""):
         if flag:
             flag = "/{}".format(flag)
