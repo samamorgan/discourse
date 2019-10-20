@@ -2,11 +2,6 @@ from .jsonobject import JsonObject
 
 
 class Group(JsonObject):
-    def __init__(self, client, **kwargs):
-        self.client = client
-
-        super().__init__(**kwargs)
-
     def delete(self):
         raise NotImplementedError
 

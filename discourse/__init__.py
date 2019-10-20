@@ -1,5 +1,7 @@
+import pkg_resources
+
 from .client import Client
 
-__version__ = "0.1.2"
+__version__ = pkg_resources.require("discourse")[0].version
 
-name = "discourse"
+__all__ = ("Client",)
