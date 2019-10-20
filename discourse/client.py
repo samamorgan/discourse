@@ -1,6 +1,7 @@
 import requests
 
 from .category import Category
+from .group import Group
 from .plugin import Plugin
 from .post import Post
 from .private_message import PrivateMessage
@@ -298,6 +299,10 @@ class Client:
     # Admin
 
     # Groups
+    def get_group(self, name):
+        response = self._request("GET", "groups/{}.json".format(name))
+
+        return Group(json=response["group"])
 
     # Password Reset
 
