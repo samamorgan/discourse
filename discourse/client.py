@@ -4,12 +4,12 @@ from .category import Category
 from .plugin import Plugin
 from .post import Post
 from .private_message import PrivateMessage
-from .tag import TagGroup, Tag
+from .tag import Tag, TagGroup
 from .topic import Topic
 from .user import User
 
 
-class Client(object):
+class Client:
 
     def __init__(self, host, api_username='', api_key=''):
         self.host = host
@@ -51,7 +51,7 @@ class Client(object):
         response = self._request('GET', 'categories.json')
 
         return [
-            Category(client=self, json=category)
+            Category(json=category)
             for category
             in response['category_list']['categories']
         ]
@@ -63,7 +63,7 @@ class Client(object):
             'text_color': text_color,
         })
 
-        return Category(client=self, json=response['category'])
+        return Category(json=response['category'])
 
     # Posts
     def get_latest_posts(self, before):
@@ -73,7 +73,7 @@ class Client(object):
         })
 
         return [
-            Post(client=self, json=post)
+            Post(json=post)
             for post
             in response['latest_posts']
         ]
@@ -84,12 +84,12 @@ class Client(object):
             'raw': raw,
         })
 
-        return Post(client=self, json=response)
+        return Post(json=response)
 
     def get_post(self, id):
         response = self._request('GET', 'posts/{}.json'.format(id))
 
-        return Post(client=self, json=response)
+        return Post(json=response)
 
     # Topics
     def create_topic(self, title, raw, category=None, created_at=None):
@@ -100,12 +100,12 @@ class Client(object):
             'created_at': created_at,
         })
 
-        return Topic(client=self, json=response)
+        return Topic(json=response)
 
     def get_topic(self, id):
         response = self._request('GET', 't/{}.json'.format(id))
 
-        return Topic(client=self, json=response)
+        return Topic(json=response)
 
     def get_latest_topics(self, order, ascending=True):
         response = self._request('GET', 'latest.json', params={
@@ -114,7 +114,7 @@ class Client(object):
         })
 
         return [
-            Topic(client=self, json=topic)
+            Topic(json=topic)
             for topic
             in response['topic_list']['topics']
         ]
@@ -125,7 +125,7 @@ class Client(object):
         response = self._request('GET', 'top{}.json'.format(flag))
 
         return [
-            Topic(client=self, json=topic)
+            Topic(json=topic)
             for topic
             in response['topic_list']['topics']
         ]
@@ -143,7 +143,7 @@ class Client(object):
         )
 
         if response['success'] == 'OK':
-            return User(client=self, json=response['user'])
+            return User(json=response['user'])
         return False
 
     def generate_invite_url(
@@ -180,14 +180,14 @@ class Client(object):
             'created_at': created_at,
         })
 
-        return PrivateMessage(client=self, json=response)
+        return PrivateMessage(json=response)
 
     # Tags
     def get_tag_groups(self):
         response = self._request('GET', 'tag_groups.json')
 
         return [
-            TagGroup(client=self, json=tag_group)
+            TagGroup(json=tag_group)
             for tag_group
             in response['tag_groups']
         ]
@@ -198,12 +198,12 @@ class Client(object):
             'tag_names': tag_names,
         })
 
-        return TagGroup(client=self, json=response['tag_group'])
+        return TagGroup(json=response['tag_group'])
 
     def get_tag_group(self, id):
         response = self._request('GET', 'tag_groups/{}.json'.format(id))
 
-        return TagGroup(client=self, json=response['tag_group'])
+        return TagGroup(json=response['tag_group'])
 
     def update_tag_group(self, id, name, tag_names):
         response = self._request(
@@ -212,17 +212,17 @@ class Client(object):
             params={'name': name, 'tag_names': tag_names}
         )
 
-        return TagGroup(client=self, json=response['tag_group'])
+        return TagGroup(json=response['tag_group'])
 
     def get_tags(self):
         response = self._request('GET', 'tags.json')
-        return [Tag(client=self, json=tag) for tag in response['tags']]
+        return [Tag(json=tag) for tag in response['tags']]
 
     def get_tag(self, tag):
         response = self._request('GET', 'tags/{}.json'.format(tag))
         response['id'] = tag
 
-        return Tag(client=self, json=response)
+        return Tag(json=response)
 
     # Users
     def get_user(self, **kwargs):
@@ -250,8 +250,8 @@ class Client(object):
         )
 
         if kw == 'id':
-            return User(client=self, json=response)
-        return User(client=self, json=response['user'])
+            return User(json=response)
+        return User(json=response['user'])
 
     def create_user(
         self,
@@ -285,7 +285,7 @@ class Client(object):
 
         # TODO: Return more than just the users here
         return [
-            User(client=self, json=user)
+            User(json=user)
             for user
             in response['directory_items']['user']
         ]
@@ -309,7 +309,7 @@ class Client(object):
             }
         )
 
-        return [User(client=self, json=user) for user in response]
+        return [User(json=user) for user in response]
 
     # Upload
 
@@ -329,7 +329,7 @@ class Client(object):
     def get_plugins(self):
         response = self._request('GET', 'admin/plugins')
 
-        return [Plugin(client=self, json=plugin) for plugin in response]
+        return [Plugin(json=plugin) for plugin in response]
     # Backups
 
     # Emails

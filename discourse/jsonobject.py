@@ -1,4 +1,4 @@
-class JsonObject(object):
+class JsonObject:
     '''An object constructed from a JSON response'''
 
     def __init__(self, json):

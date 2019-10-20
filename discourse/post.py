@@ -3,13 +3,8 @@ from .jsonobject import JsonObject
 
 class Post(JsonObject):
 
-    def __init__(self, client, **kwargs):
-        self.client = client
-
-        super().__init__(**kwargs)
-
-    def update(self, raw=None, raw_old=None, edit_reason=None, cooked=None):
-        response = self.client._request(
+    def update(self, client, raw=None, raw_old=None, edit_reason=None, cooked=None):
+        response = client._request(
             'PUT',
             'posts/{}.json'.format(self.id),
             params={
@@ -20,10 +15,10 @@ class Post(JsonObject):
             }
         )
 
-        return Post(client=self.client, json=response['post'])
+        return Post(json=response['post'])
 
-    def lock(self, locked):
-        response = self.client._request(
+    def lock(self, client, locked):
+        response = client._request(
             'PUT',
             'posts/{}/locked'.format(self.id),
             params={'locked': locked}
@@ -31,7 +26,7 @@ class Post(JsonObject):
 
         return response
 
-    def action(self, action):
+    def action(self, client, action):
         # Must understand what the action fields represent before implementing
         # return Post(), True or False
         raise NotImplementedError
