@@ -110,8 +110,11 @@ class Client:
 
         return Topic(json=response)
 
-    def get_topic(self, id):
-        response = self._request("GET", "t/{}.json".format(id))
+    def get_topic(self, id, print=False):
+        # print=True returns more details, and up to 1000 posts at once.
+        # However, it is more heavily rate-limited by default.
+        params = {"print": "true"} if print else {}
+        response = self._request("GET", "t/{}.json".format(id), params=params)
 
         return Topic(json=response)
 
