@@ -1,3 +1,6 @@
+import json
+
+
 class JsonObject:
     """An object constructed from a JSON response"""
 
@@ -8,13 +11,11 @@ class JsonObject:
         return "{} with ID: {}".format(self.__class__.__name__, self.id)
 
     def __repr__(self):
-        vars_string = str(self.__dict__)
-
-        replace = {": ": "=", "{": "", "}": ""}
-        for key in replace:
-            vars_string = vars_string.replace(key, replace[key])
-
-        return "{}({})".format(self.__class__.__name__, vars_string)
+        try:
+            as_json = json.dumps(self.__dict__)
+        except TypeError:
+            as_json = "<invalid JSON>"
+        return "{}(json={})".format(self.__class__.__name__, as_json)
 
     def update_attributes(self, json):
         self.__dict__.update(json)
