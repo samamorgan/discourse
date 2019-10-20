@@ -83,6 +83,13 @@ class Client:
 
         return Post(json=response)
 
+    def get_post_by_number(self, topic_id, post_number):
+        response = self._request(
+            "GET", "posts/by_number/{}/{}.json".format(topic_id, post_number)
+        )
+
+        return Post(json=response)
+
     def get_post(self, id):
         response = self._request("GET", "posts/{}.json".format(id))
 
