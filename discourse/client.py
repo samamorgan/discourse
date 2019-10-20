@@ -68,6 +68,13 @@ class Client:
 
         return [Post(json=post) for post in response["latest_posts"]]
 
+    def get_group_posts(self, group_name):
+        response = self._request(
+            "GET", "groups/{}/posts.json".format(group_name),
+        )
+
+        return [Post(json=post) for post in response]
+
     def create_post(self, topic_id, raw):
         response = self._request(
             "POST", "posts.json", params={"topic_id": topic_id, "raw": raw}
