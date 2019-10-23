@@ -11,7 +11,19 @@ from .user import User
 
 
 class Client:
+
+    Category = Category
+    Group = Group
+    Plugin = Plugin
+    Post = Post
+    PrivateMessage = PrivateMessage
+    Tag = Tag
+    TagGroup = TagGroup
+    Topic = Topic
+    User = User
+
     def __init__(self, host, api_username="", api_key=""):
+        # TODO: Better URL join method. If initialized without scheme, requests fail.
         self.host = host
 
         self.session = requests.Session()
