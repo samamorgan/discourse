@@ -62,7 +62,7 @@ class Client:
         response = self._request("GET", "categories.json")
 
         return [
-            Category(json=category)
+            Category(client=self, json=category)
             for category in response["category_list"]["categories"]
         ]
 
@@ -73,40 +73,38 @@ class Client:
             params={"name": name, "color": color, "text_color": text_color},
         )
 
-        return Category(json=response["category"])
+        return Category(client=self, json=response["category"])
 
     # Posts
     def get_latest_posts(self, before):
         # TODO: Figure out good default for before
         response = self._request("GET", "posts.json", params={"before": before})
 
-        return [Post(json=post) for post in response["latest_posts"]]
+        return [Post(client=self, json=post) for post in response["latest_posts"]]
 
     def get_group_posts(self, group_name):
-        response = self._request(
-            "GET", "groups/{}/posts.json".format(group_name),
-        )
+        response = self._request("GET", "groups/{}/posts.json".format(group_name))
 
-        return [Post(json=post) for post in response]
+        return [Post(client=self, json=post) for post in response]
 
     def create_post(self, topic_id, raw):
         response = self._request(
             "POST", "posts.json", params={"topic_id": topic_id, "raw": raw}
         )
 
-        return Post(json=response)
+        return Post(client=self, json=response)
 
     def get_post_by_number(self, topic_id, post_number):
         response = self._request(
             "GET", "posts/by_number/{}/{}.json".format(topic_id, post_number)
         )
 
-        return Post(json=response)
+        return Post(client=self, json=response)
 
     def get_post(self, id):
         response = self._request("GET", "posts/{}.json".format(id))
 
-        return Post(json=response)
+        return Post(client=self, json=response)
 
     # Topics
     def create_topic(self, title, raw, category=None, created_at=None):
@@ -121,7 +119,7 @@ class Client:
             },
         )
 
-        return Topic(json=response)
+        return Topic(client=self, json=response)
 
     def get_topic(self, id, print=False):
         # print=True returns more details, and up to 1000 posts at once.
@@ -129,28 +127,32 @@ class Client:
         params = {"print": "true"} if print else {}
         response = self._request("GET", "t/{}.json".format(id), params=params)
 
-        return Topic(json=response)
+        return Topic(client=self, json=response)
 
     def get_latest_topics(self, order, ascending=True):
         response = self._request(
             "GET", "latest.json", params={"order": order, "ascending": ascending}
         )
 
-        return [Topic(json=topic) for topic in response["topic_list"]["topics"]]
+        return [
+            Topic(client=self, json=topic) for topic in response["topic_list"]["topics"]
+        ]
 
     def get_group_topics(self, group_name):
-        response = self._request(
-            "GET", "topics/groups/{}.json".format(group_name),
-        )
+        response = self._request("GET", "topics/groups/{}.json".format(group_name))
 
-        return [Topic(json=topic) for topic in response["topic_list"]["topics"]]
+        return [
+            Topic(client=self, json=topic) for topic in response["topic_list"]["topics"]
+        ]
 
     def get_top_topics(self, flag=""):
         if flag:
             flag = "/{}".format(flag)
         response = self._request("GET", "top{}.json".format(flag))
 
-        return [Topic(json=topic) for topic in response["topic_list"]["topics"]]
+        return [
+            Topic(client=self, json=topic) for topic in response["topic_list"]["topics"]
+        ]
 
     # Invites
     def invite_user(self, email, group_names=None, custom_message=None):
@@ -165,7 +167,7 @@ class Client:
         )
 
         if response["success"] == "OK":
-            return User(json=response["user"])
+            return User(client=self, json=response["user"])
         return False
 
     def generate_invite_url(self, email, group_names=None, custom_message=None):
@@ -195,25 +197,28 @@ class Client:
             },
         )
 
-        return PrivateMessage(json=response)
+        return PrivateMessage(client=self, json=response)
 
     # Tags
     def get_tag_groups(self):
         response = self._request("GET", "tag_groups.json")
 
-        return [TagGroup(json=tag_group) for tag_group in response["tag_groups"]]
+        return [
+            TagGroup(client=self, json=tag_group)
+            for tag_group in response["tag_groups"]
+        ]
 
     def create_tag_group(self, name, tag_names):
         response = self._request(
             "POST", "tag_groups.json", params={"name": name, "tag_names": tag_names}
         )
 
-        return TagGroup(json=response["tag_group"])
+        return TagGroup(client=self, json=response["tag_group"])
 
     def get_tag_group(self, id):
         response = self._request("GET", "tag_groups/{}.json".format(id))
 
-        return TagGroup(json=response["tag_group"])
+        return TagGroup(client=self, json=response["tag_group"])
 
     def update_tag_group(self, id, name, tag_names):
         response = self._request(
@@ -222,17 +227,17 @@ class Client:
             params={"name": name, "tag_names": tag_names},
         )
 
-        return TagGroup(json=response["tag_group"])
+        return TagGroup(client=self, json=response["tag_group"])
 
     def get_tags(self):
         response = self._request("GET", "tags.json")
-        return [Tag(json=tag) for tag in response["tags"]]
+        return [Tag(client=self, json=tag) for tag in response["tags"]]
 
     def get_tag(self, tag):
         response = self._request("GET", "tags/{}.json".format(tag))
         response["id"] = tag
 
-        return Tag(json=response)
+        return Tag(client=self, json=response)
 
     # Users
     def get_user(self, **kwargs):
@@ -255,8 +260,8 @@ class Client:
         response = self._request("GET", keyword_map[kw].format(kwargs[kw]))
 
         if kw == "id":
-            return User(json=response)
-        return User(json=response["user"])
+            return User(self, response)
+        return User(client=self, json=response["user"])
 
     def create_user(
         self,
@@ -297,7 +302,9 @@ class Client:
         )
 
         # TODO: Return more than just the users here
-        return [User(json=user) for user in response["directory_items"]["user"]]
+        return [
+            User(client=self, json=user) for user in response["directory_items"]["user"]
+        ]
 
     def get_users(self, flag, order, ascending=True, page=None, show_emails=None):
         response = self._request(
@@ -311,7 +318,7 @@ class Client:
             },
         )
 
-        return [User(json=user) for user in response]
+        return [User(client=self, json=user) for user in response]
 
     # Upload
 
@@ -330,7 +337,7 @@ class Client:
     def get_group(self, name):
         response = self._request("GET", "groups/{}.json".format(name))
 
-        return Group(json=response["group"])
+        return Group(client=self, json=response["group"])
 
     # Password Reset
 
@@ -343,7 +350,7 @@ class Client:
     def get_plugins(self):
         response = self._request("GET", "admin/plugins")
 
-        return [Plugin(json=plugin) for plugin in response]
+        return [Plugin(client=self, json=plugin) for plugin in response]
 
     # Backups
     def get_backups(self):

@@ -4,8 +4,8 @@ from .private_message import PrivateMessage
 
 
 class User(JsonObject):
-    def update_avatar(self, client, upload_id, type):
-        response = client._request(
+    def update_avatar(self, upload_id, type):
+        response = self.client._request(
             "PUT",
             "users/{}/preferences/avatar/pick".format(self.username),
             params={"upload_id": upload_id, "type": type},
@@ -16,8 +16,8 @@ class User(JsonObject):
             return True
         return False
 
-    def update_email(self, client, email):
-        response = client._request(
+    def update_email(self, email):
+        response = self.client._request(
             "PUT",
             "users/{}/preferences/email".format(self.username),
             params={"email": email},
@@ -29,14 +29,9 @@ class User(JsonObject):
         return False
 
     def delete(
-        self,
-        client,
-        delete_posts=False,
-        block_email=False,
-        block_urls=False,
-        block_ip=False,
+        self, delete_posts=False, block_email=False, block_urls=False, block_ip=False
     ):
-        response = client._request(
+        response = self.client._request(
             "DELETE",
             "admin/users/{}.json".format(self.id),
             params={
@@ -51,48 +46,50 @@ class User(JsonObject):
             return True
         return False
 
-    def log_out(self, client):
-        response = client._request("POST", "admin/users/{}/log_out".format(self.id))
+    def log_out(self):
+        response = self.client._request(
+            "POST", "admin/users/{}/log_out".format(self.id)
+        )
 
         if response["success"] == "OK":
             return True
         return False
 
-    def refresh_gravatar(self, client):
-        return client._request(
+    def refresh_gravatar(self):
+        return self.client._request(
             "POST", "user_avatar/{}/refresh_gravatar.json".format(self.username)
         )
 
-    def get_actions(self, client, offset, filter):
+    def get_actions(self, offset, filter):
         # TODO: Create "Action" class
-        return client._request(
+        return self.client._request(
             "GET",
             "user_actions.json",
             params={"offset": offset, "username": self.username, "filter": filter},
         )
 
-    def get_private_messages(self, client):
-        response = client._request(
+    def get_private_messages(self):
+        response = self.client._request(
             "GET", "topics/private-messages/{}.json".format(self.username)
         )
 
         return [
-            PrivateMessage(json=private_message)
+            PrivateMessage(client=self.client, json=private_message)
             for private_message in response["topic_list"]["topics"]
         ]
 
-    def get_private_messages_sent(self, client):
-        response = client._request(
+    def get_private_messages_sent(self):
+        response = self.client._request(
             "GET", "topics/private-messages-sent/{}.json".format(self.username)
         )
 
         return [
-            PrivateMessage(json=private_message)
+            PrivateMessage(client=self.client, json=private_message)
             for private_message in response["topic_list"]["topics"]
         ]
 
-    def get_notifications(self, client):
-        response = client._request(
+    def get_notifications(self):
+        response = self.client._request(
             "GET", "notifications.json", params={"username": self.username}
         )
 
