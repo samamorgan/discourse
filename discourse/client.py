@@ -8,6 +8,7 @@ from .private_message import PrivateMessage
 from .tag import Tag, TagGroup
 from .topic import Topic
 from .user import User
+from .web_hook import WebHook
 
 
 class Client:
@@ -21,6 +22,7 @@ class Client:
     TagGroup = TagGroup
     Topic = Topic
     User = User
+    WebHook = WebHook
 
     def __init__(self, host, api_username="", api_key=""):
         # TODO: Better URL join method. If initialized without scheme, requests fail.
@@ -454,10 +456,25 @@ class Client:
         return self._request("GET", "/admin/customize/user_fields.json")
 
     def create_user_field(self, name, description, field_type, required):
-        raise NotImplementedError
+        return self._request(
+            "POST",
+            "/admin/customize/user_fields.json",
+            params={
+                "user_field[name]": name,
+                "user_field[description]": description,
+                "user_field[field_type]": field_type,
+                "user_field[required]": required,
+            },
+        )
 
     def delete_user_field(self, id):
-        raise NotImplementedError
+        response = self._request(
+            "DELETE", "/admin/customize/user_fields/{id}", params={"id": id}
+        )
+
+        if response["success"] == "OK":
+            return True
+        return False
 
     # Web Hooks
     def create_web_hook(
@@ -472,24 +489,57 @@ class Client:
         category_ids,
         group_ids,
     ):
-        raise NotImplementedError
+        response = self._request(
+            "POST",
+            "/admin/api/web_hooks",
+            params={
+                "payload_url": payload_url,
+                "content_type": content_type,
+                "secret": secret,
+                "wildcard_web_hook": wildcard_web_hook,
+                "verify_certificate": verify_certificate,
+                "active": active,
+                "web_hook_event_type_ids": web_hook_event_type_ids,
+                "category_ids": category_ids,
+                "group_ids": group_ids,
+            },
+        )
+
+        return WebHook(client=self, json=response)
 
     # Logs
-    def get_staff_action_logs(self):
-        raise NotImplementedError
+    def get_staff_action_logs(self, action_name, action_id):
+        return self._request(
+            "GET",
+            "/admin/logs/staff_action_logs.json",
+            params={"action_name": action_name, "action_id": action_id},
+        )
 
     # About
     def fetch_about(self):
-        raise NotImplementedError
+        return self._request("GET", "/about.json")
 
     # Poll Plugin
     def poll_vote(self, post_id, poll_name, options):
         # May be best to implement in Post class. Investigate
-        raise NotImplementedError
+        response = self._request(
+            "PUT",
+            "/polls/vote",
+            params={"post_id": post_id, "poll_name": poll_name, "options": options},
+        )
 
     # Reports
     def get_pageview_stats(self, start_date, end_date, category_id, group_id):
-        raise NotImplementedError
+        return self._request(
+            "GET",
+            "/page_view_total_reqs",
+            params={
+                "start_date": start_date,
+                "end_date": end_date,
+                "category_id": category_id,
+                "group_id": group_id,
+            },
+        )
 
     def get_site_configuration(self):
         response = self._request("GET", "site.json")
@@ -497,4 +547,18 @@ class Client:
         return response
 
     def export_report(self, entity, name, start_date, end_date, group_id):
-        raise NotImplementedError
+        response = self._request(
+            "POST",
+            "/export_csv/export_entity.json",
+            params={
+                "entity": entity,
+                "args[name]": name,
+                "args[start_date]": start_date,
+                "args[end_date]": end_date,
+                "args[group_id]": group_id,
+            },
+        )
+
+        if response["success"] == "OK":
+            return True
+        return False
