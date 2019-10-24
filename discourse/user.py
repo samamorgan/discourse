@@ -60,8 +60,8 @@ class User(JsonObject):
             "POST", "user_avatar/{}/refresh_gravatar.json".format(self.username)
         )
 
-    def get_actions(self, offset, filter):
-        # TODO: Create "Action" class
+    def get_actions(self, offset=None, filter=None):
+        # TODO: Test and document useful values for parameters
         return self.client._request(
             "GET",
             "user_actions.json",
