@@ -1,18 +1,12 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 from .topic import Topic
 
 
 # TODO: Parse out sub-categories into category objects if possible
-class Category(JsonObject):
+class Category(JSONObject):
     def get_topics(self, page=None):
-        response = self.client._request(
-            "GET", "c/{}.json".format(self.id), params={"page": page}
-        )
-
-        return [
-            Topic(lient=self.client, json=topic)
-            for topic in response["topic_list"]["topics"]
-        ]
+        params = {"page": page}
+        return self.session.self.get("c/{}.json".format(self.id), params=params)
 
     # TODO: Override attribute calls to the below attributes to use update
     # function instead of returning the attribute
@@ -22,13 +16,16 @@ class Category(JsonObject):
         if not text_color:
             color = self.text_color
 
-        response = self.client._request(
-            "PUT",
-            "categories/{}.json".format(self.id),
-            params={"name": name, "color": color, "text_color": text_color},
+        params = {"name": name, "color": color, "text_color": text_color}
+        response = self.session.request(
+            "PUT", "categories/{}.json".format(self.id), params=params
         )
 
         if response["success"] == "OK":
-            self.update_attributes(json=response["category"])
-            return self
+            self.update_attributes(**response["category"])
+            return True
         return False
+
+
+class CategoryList(JSONObject):
+    pass

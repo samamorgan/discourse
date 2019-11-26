@@ -1,5 +1,5 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 
 
-class WebHook(JsonObject):
+class WebHook(JSONObject):
     pass

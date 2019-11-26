@@ -1,32 +1,21 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 
 
-class Group(JsonObject):
+class Group(JSONObject):
     def delete(self):
-        response = self.client._request(
-            "DELETE", "/admin/groups/{}.json".format(self.id)
-        )
-
-        if response["success"] == "OK":
-            return True
-        return False
+        return self.session.self.delete("/admin/groups/{}.json".format(self.id))
 
     def get_members(self):
-        return self.client._request("GET", "/groups/{}/members.json".format(self.name))
+        return self.session.self.get("/groups/{}/members.json".format(self.name))
 
     def add_users(self, usernames):
         if type(usernames) is list:
             usernames = ",".join(usernames)
 
-        response = self.client._request(
-            "PUT",
-            "/groups/{}/members.json".format(self.id),
-            params={"usernames": usernames},
+        params = {"usernames": usernames}
+        return self.session.request(
+            "PUT", "/groups/{}/members.json".format(self.id), params=params
         )
-
-        if response["success"] == "OK":
-            return True
-        return False
 
     def remove_users(self, usernames):
         # Need to understand the difference between:
@@ -36,4 +25,4 @@ class Group(JsonObject):
 
     def update(self):
         # TODO: Test what this actually does. This must take some sort of input.
-        return self.client._request("PUT", "/groups/{name}.json")
+        return self.session.self.put("/groups/{name}.json")

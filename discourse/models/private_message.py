@@ -1,5 +1,5 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 
 
-class PrivateMessage(JsonObject):
+class PrivateMessage(JSONObject):
     pass

@@ -1,53 +1,40 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 from .notification import Notification
 from .private_message import PrivateMessage
 
 
-class User(JsonObject):
+class User(JSONObject):
     def update_avatar(self, upload_id, type):
-        response = self.client._request(
+        # TODO: Update instance attribute for avatar on success
+        params = {"upload_id": upload_id, "type": type}
+        return self.session.request(
             "PUT",
             "users/{}/preferences/avatar/pick".format(self.username),
-            params={"upload_id": upload_id, "type": type},
+            params=params,
         )
-
-        # TODO: Update instance attribute for avatar on success
-        if response["success"] == "OK":
-            return True
-        return False
 
     def update_email(self, email):
-        response = self.client._request(
-            "PUT",
-            "users/{}/preferences/email".format(self.username),
-            params={"email": email},
-        )
-
         # TODO: Documentation unclear on response, investigate
-        if response["success"] == "OK":
-            return True
-        return False
+        params = {"email": email}
+        return self.session.request(
+            "PUT", "users/{}/preferences/email".format(self.username), params=params
+        )
 
     def delete(
         self, delete_posts=False, block_email=False, block_urls=False, block_ip=False
     ):
-        response = self.client._request(
-            "DELETE",
-            "admin/users/{}.json".format(self.id),
-            params={
-                "delete_posts": delete_posts,
-                "block_email": block_email,
-                "block_urls": block_urls,
-                "block_ip": block_ip,
-            },
+        params = {
+            "delete_posts": delete_posts,
+            "block_email": block_email,
+            "block_urls": block_urls,
+            "block_ip": block_ip,
+        }
+        return self.session.request(
+            "DELETE", "admin/users/{}.json".format(self.id), params=params
         )
 
-        if response["deleted"] == "true":
-            return True
-        return False
-
     def log_out(self):
-        response = self.client._request(
+        response = self.session.request(
             "POST", "admin/users/{}/log_out".format(self.id)
         )
 
@@ -56,46 +43,41 @@ class User(JsonObject):
         return False
 
     def refresh_gravatar(self):
-        return self.client._request(
+        return self.session.request(
             "POST", "user_avatar/{}/refresh_gravatar.json".format(self.username)
         )
 
     def get_actions(self, offset=None, filter=None):
         # TODO: Test and document useful values for parameters
-        return self.client._request(
-            "GET",
-            "user_actions.json",
-            params={"offset": offset, "username": self.username, "filter": filter},
-        )
+        params = {"offset": offset, "username": self.username, "filter": filter}
+        return self.session.self.get("user_actions.json", params=params)
 
     def get_private_messages(self):
-        response = self.client._request(
+        response = self.session.request(
             "GET", "topics/private-messages/{}.json".format(self.username)
         )
 
         return [
-            PrivateMessage(client=self.client, json=private_message)
+            PrivateMessage(self.session, **private_message)
             for private_message in response["topic_list"]["topics"]
         ]
 
     def get_private_messages_sent(self):
-        response = self.client._request(
+        response = self.session.request(
             "GET", "topics/private-messages-sent/{}.json".format(self.username)
         )
 
         return [
-            PrivateMessage(client=self.client, json=private_message)
+            PrivateMessage(self.session, **private_message)
             for private_message in response["topic_list"]["topics"]
         ]
 
     def get_notifications(self):
-        response = self.client._request(
-            "GET", "notifications.json", params={"username": self.username}
-        )
+        params = {"username": self.username}
+        response = self.session.self.get("notifications.json", params=params)
 
         return [
-            Notification(json=notification)
-            for notification in response["notifications"]
+            Notification(**notification) for notification in response["notifications"]
         ]
 
     def mark_notifications_read(self):

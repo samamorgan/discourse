@@ -1,5 +1,5 @@
-from .jsonobject import JsonObject
+from .jsonobject import JSONObject
 
 
-class Notification(JsonObject):
+class Notification(JSONObject):
     pass
