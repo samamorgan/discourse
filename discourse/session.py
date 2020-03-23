@@ -1,5 +1,3 @@
-import json
-
 import requests
 
 from .models import *
@@ -115,7 +113,7 @@ class Session(requests.Session):
             "category": category,
             "created_at": created_at,
         }
-        response = self.post("topics.json", params=params)
+        response = self.post("posts.json", params=params)
 
         return Topic(self, **response)
 
