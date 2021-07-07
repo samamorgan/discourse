@@ -279,15 +279,15 @@ class Client(object):
         response = self._request('GET', 'directory_items.json', params={
             'period': period,
             'order': order,
-            'ascending': ascending,
+            'asc': "true" if ascending else "false",
             'page': page,
         })
 
         # TODO: Return more than just the users here
         return [
-            User(client=self, json=user)
+            User(client=self, json=user['user'])
             for user
-            in response['directory_items']['user']
+            in response['directory_items']
         ]
 
     def get_users(
@@ -300,10 +300,10 @@ class Client(object):
     ):
         response = self._request(
             'GET',
-            'admin/users/list/{}.json'.format(self.flag),
+            'admin/users/list/{}.json'.format(flag),
             params={
                 'order': order,
-                'ascending': ascending,
+                'asc': "true" if ascending else "false",
                 'page': page,
                 'show_emails': show_emails,
             }
